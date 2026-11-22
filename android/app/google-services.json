@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "809960786312",
+    "project_id": "ganaderiapp-d10e5",
+    "storage_bucket": "ganaderiapp-d10e5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809960786312:android:16f058796345354274523d",
+        "android_client_info": {
+          "package_name": "com.example.proyecto_final"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "809960786312-u0ttlrd2bkdtugbpvodeka22fnjolcl3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbJfy34HNa1eTkdopUFnVwzMhhnTaUWWU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "809960786312-u0ttlrd2bkdtugbpvodeka22fnjolcl3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
