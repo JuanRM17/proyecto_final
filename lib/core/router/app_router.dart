@@ -1,30 +1,55 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/forgot_password_screen.dart';
+import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/register_screen.dart';
+import '../../features/auth/presentation/verify_email_screen.dart';
+import '../../features/auth/providers/auth_provider.dart';
 import '../../features/home/presentation/home_shell.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/onboarding/providers/onboarding_provider.dart';
+import '../../features/profile/presentation/profile_screen.dart';
+
+const _publicRoutes = {'/login', '/register', '/forgot-password'};
 
 final routerProvider = Provider<GoRouter>((ref) {
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: '/',
     redirect: (context, state) {
       final seen = ref.read(onboardingSeenProvider);
-      final goingToOnboarding = state.matchedLocation == '/onboarding';
+      final user = ref.read(sessionProvider);
+      final loc = state.matchedLocation;
 
-      if (!seen && !goingToOnboarding) return '/onboarding';
-      if (seen && goingToOnboarding) return '/';
+      if (!seen) return loc == '/onboarding' ? null : '/onboarding';
+      if (loc == '/onboarding') return user == null ? '/login' : '/';
+
+      if (user == null) return _publicRoutes.contains(loc) ? null : '/login';
+
+      if (!user.canAccess) return loc == '/verify-email' ? null : '/verify-email';
+
+      if (_publicRoutes.contains(loc) || loc == '/verify-email') return '/';
       return null;
     },
     routes: [
+      GoRoute(path: '/', builder: (c, s) => const HomeShell()),
+      GoRoute(path: '/onboarding', builder: (c, s) => const OnboardingScreen()),
+      GoRoute(path: '/login', builder: (c, s) => const LoginScreen()),
+      GoRoute(path: '/register', builder: (c, s) => const RegisterScreen()),
       GoRoute(
-        path: '/',
-        builder: (context, state) => const HomeShell(),
+        path: '/forgot-password',
+        builder: (c, s) => const ForgotPasswordScreen(),
       ),
-      GoRoute(
-        path: '/onboarding',
-        builder: (context, state) => const OnboardingScreen(),
-      ),
+      GoRoute(path: '/verify-email', builder: (c, s) => const VerifyEmailScreen()),
+      GoRoute(path: '/profile', builder: (c, s) => const ProfileScreen()),
     ],
   );
+
+  // Re-evalúa las redirecciones cuando cambia la sesión o el onboarding,
+  // sin usar ChangeNotifier/ValueNotifier ni reconstruir el router.
+  ref.listen(sessionProvider, (_, _) => router.refresh());
+  ref.listen(onboardingSeenProvider, (_, _) => router.refresh());
+  ref.onDispose(router.dispose);
+
+  return router;
 });
