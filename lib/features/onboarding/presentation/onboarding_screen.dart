@@ -14,7 +14,7 @@ class _OnboardingItem {
 
 const _items = [
   _OnboardingItem(
-    Icons.agriculture,
+    Icons.agriculture_outlined,
     'Conoce las razas',
     'Explora fichas de razas bovinas con su origen, características y aptitud productiva.',
   ),
