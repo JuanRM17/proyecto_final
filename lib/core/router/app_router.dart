@@ -16,6 +16,8 @@ import '../../features/checkout/presentation/checkout_screen.dart';
 import '../../features/checkout/presentation/order_success_screen.dart';
 import '../../features/orders/presentation/orders_history_screen.dart';
 
+import '../../features/notifications/presentation/notification_settings_screen.dart';
+
 const _publicRoutes = {'/login', '/register', '/forgot-password'};
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -54,6 +56,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (c, s) => OrderSuccessScreen(orderId: s.pathParameters['id']!),
       ),
       GoRoute(path: '/orders', builder: (c, s) => const OrdersHistoryScreen()),
+      GoRoute(path: '/notifications', builder: (c, s) => const NotificationSettingsScreen(),),
     ],
   );
 

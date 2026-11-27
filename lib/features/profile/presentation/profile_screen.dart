@@ -90,6 +90,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => context.push('/orders'),
                     ),
+                    ListTile(
+                      leading: const Icon(Icons.notifications_outlined),
+                      title: const Text('Notificaciones'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/notifications'),
+                    ),
                   ],
                 ),
               ),
