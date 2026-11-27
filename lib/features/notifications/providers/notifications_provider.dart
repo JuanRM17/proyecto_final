@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/services/local_notification_service.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../core/services/preferences_provider.dart';
 
@@ -35,6 +36,10 @@ const pushTopics = [
 
 final notificationServiceProvider =
     Provider<NotificationService>((ref) => NotificationService());
+
+final localNotificationServiceProvider = Provider<LocalNotificationService>(
+  (ref) => LocalNotificationService(),
+);
 
 /// Temas a los que está suscrito el usuario (se guarda en el dispositivo).
 class TopicSubscriptionsNotifier extends Notifier<Set<String>> {

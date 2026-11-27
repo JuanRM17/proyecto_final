@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../cart/providers/cart_provider.dart';
+import '../../notifications/providers/notifications_provider.dart';
 import '../data/order_repository.dart';
 import '../data/payment_simulator.dart';
 import '../models/card_data.dart';
@@ -48,7 +49,17 @@ class CheckoutController extends AsyncNotifier<void> {
       ref.read(cartProvider.notifier).clear();
     });
 
-    return state.hasError ? null : orderId;
+    if (state.hasError || orderId == null) return null;
+
+    // Aviso inmediato en el dispositivo, si el usuario tiene activado "Pedidos".
+    if (ref.read(topicSubscriptionsProvider).contains('pedidos')) {
+      // Sin await: el pedido ya quedó guardado y no hay que esperar al aviso.
+      ref
+          .read(localNotificationServiceProvider)
+          .showOrderPlaced(orderId: orderId!, total: total);
+    }
+
+    return orderId;
   }
 }
 

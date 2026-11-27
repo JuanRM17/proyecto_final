@@ -73,6 +73,13 @@ final pushListenerProvider = Provider<void>((ref) {
     }
   }).catchError((_) {});
 
+  // 4) Notificaciones locales (p. ej. "Pedido realizado"): al tocarlas.
+  ref.read(localNotificationServiceProvider).init(onTap: (payload) {
+    if (payload != null && _allowedRoutes.contains(payload)) {
+      router.push(payload);
+    }
+  }).catchError((Object e) => debugPrint('Notificación local init: $e'));
+
   // Permiso y suscripción por defecto al iniciar sesión.
   ref.listen(sessionProvider, (previous, next) {
     final wasAllowed = previous?.canAccess ?? false;
