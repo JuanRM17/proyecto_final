@@ -84,6 +84,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       title: const Text('Correo verificado'),
                       subtitle: Text(user.canAccess ? 'Sí' : 'No'),
                     ),
+                    ListTile(
+                      leading: const Icon(Icons.receipt_long_outlined),
+                      title: const Text('Mis pedidos'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/orders'),
+                    ),
                   ],
                 ),
               ),

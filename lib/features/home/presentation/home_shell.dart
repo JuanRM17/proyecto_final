@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/utils/responsive.dart';
 import '../../breeds/presentation/breeds_screen.dart';
+import '../../cart/providers/cart_provider.dart';
+import '../../products/presentation/products_screen.dart';
 import '../../profile/presentation/user_avatar.dart';
 import '../providers/home_tab_provider.dart';
 
@@ -14,15 +16,13 @@ class HomeShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final index = ref.watch(homeTabProvider);
+    final cartCount = ref.watch(cartCountProvider);
     final select = ref.read(homeTabProvider.notifier).select;
     final isDesktop = context.isDesktop;
 
     final body = IndexedStack(
       index: index,
-      children: const [
-        BreedsScreen(),
-        _ComingSoon(label: 'Insumos veterinarios'),
-      ],
+      children: const [BreedsScreen(), ProductsScreen()],
     );
 
     return Scaffold(
@@ -37,6 +37,16 @@ class HomeShell extends ConsumerWidget {
         ),
         actions: [
           IconButton(
+            tooltip: 'Carrito',
+            icon: Badge(
+              isLabelVisible: cartCount > 0,
+              label: Text('$cartCount'),
+              child: const Icon(Icons.shopping_cart_outlined),
+            ),
+            onPressed: () => context.push('/cart'),
+          ),
+          IconButton(
+            tooltip: 'Cambiar tema',
             icon: const Icon(Icons.brightness_6),
             onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
           ),
@@ -87,14 +97,4 @@ class HomeShell extends ConsumerWidget {
             ),
     );
   }
-}
-
-class _ComingSoon extends StatelessWidget {
-  const _ComingSoon({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) =>
-      Center(child: Text('$label: próximamente'));
 }

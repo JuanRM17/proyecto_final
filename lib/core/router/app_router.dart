@@ -11,6 +11,11 @@ import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/onboarding/providers/onboarding_provider.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 
+import '../../features/cart/presentation/cart_screen.dart';
+import '../../features/checkout/presentation/checkout_screen.dart';
+import '../../features/checkout/presentation/order_success_screen.dart';
+import '../../features/orders/presentation/orders_history_screen.dart';
+
 const _publicRoutes = {'/login', '/register', '/forgot-password'};
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -42,6 +47,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/verify-email', builder: (c, s) => const VerifyEmailScreen()),
       GoRoute(path: '/profile', builder: (c, s) => const ProfileScreen()),
+            GoRoute(path: '/cart', builder: (c, s) => const CartScreen()),
+      GoRoute(path: '/checkout', builder: (c, s) => const CheckoutScreen()),
+      GoRoute(
+        path: '/order-success/:id',
+        builder: (c, s) => OrderSuccessScreen(orderId: s.pathParameters['id']!),
+      ),
+      GoRoute(path: '/orders', builder: (c, s) => const OrdersHistoryScreen()),
     ],
   );
 
