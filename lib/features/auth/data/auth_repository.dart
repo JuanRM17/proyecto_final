@@ -6,6 +6,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+import '../../../core/config/firebase_config.dart';
+
 /// El usuario cerró la ventana de Google/Facebook: no es un error a mostrar.
 class AuthCancelledException implements Exception {}
 
@@ -144,16 +150,43 @@ class AuthRepository {
 
   /// Sube la foto a Storage y la asigna al perfil. Con nombre único por
   /// subida para que la caché de imágenes no muestre la foto anterior.
-  Future<void> updateProfilePhoto(Uint8List bytes) async {
+    Future<void> updateProfilePhoto(Uint8List bytes) async {
     final user = _auth.currentUser;
     if (user == null) throw StateError('No hay sesión activa');
 
-    final ref = _storage.ref(
-      'users/${user.uid}/avatar_${DateTime.now().millisecondsSinceEpoch}.jpg',
-    );
-    await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
-    final url = await ref.getDownloadURL();
+    final url = kUseFirebaseStorage
+        ? await _uploadToFirebaseStorage(user.uid, bytes)
+        : await _uploadToCloudinary(bytes);
+
     await user.updatePhotoURL(url);
     await user.reload();
+  }
+
+  Future<String> _uploadToFirebaseStorage(String uid, Uint8List bytes) async {
+    final ref = _storage.ref(
+      'users/$uid/avatar_${DateTime.now().millisecondsSinceEpoch}.jpg',
+    );
+    await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
+    return ref.getDownloadURL();
+  }
+
+  Future<String> _uploadToCloudinary(Uint8List bytes) async {
+    final uri = Uri.parse(
+      'https://api.cloudinary.com/v1_1/$kCloudinaryCloudName/image/upload',
+    );
+    final request = http.MultipartRequest('POST', uri)
+      ..fields['upload_preset'] = kCloudinaryUploadPreset
+      ..files.add(
+        http.MultipartFile.fromBytes('file', bytes, filename: 'avatar.jpg'),
+      );
+
+    final streamed = await request.send().timeout(const Duration(seconds: 30));
+    final response = await http.Response.fromStream(streamed);
+    if (response.statusCode != 200) {
+      throw Exception('Error al subir la imagen (${response.statusCode})');
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return data['secure_url'] as String;
   }
 }
